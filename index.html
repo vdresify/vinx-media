@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VinX Media - Login & Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b0f19; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .gold-border { border-color: #b8860b; }
+        .gold-bg { background-color: #b8860b; }
+        .gold-text { color: #b8860b; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-[#131b2e] rounded-2xl shadow-2xl border gold-border p-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold tracking-wider gold-text">VinX Media</h1>
+            <p class="text-sm text-gray-400 mt-1">Task Engagement & Monetization Portal</p>
+        </div>
+
+        <div class="flex mb-6 bg-[#0b0f19] rounded-xl p-1 border border-gray-800">
+            <button id="loginTabBtn" onclick="switchTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg gold-bg text-black transition-all">Login</button>
+            <button id="registerTabBtn" onclick="switchTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-400 transition-all">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Email</label>
+                <input type="email" id="loginEmail" required class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl focus:outline-none focus:border-[#b8860b] text-sm text-white" placeholder="Enter your email">
+            </div>
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Password</label>
+                <input type="password" id="loginPassword" required class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl focus:outline-none focus:border-[#b8860b] text-sm text-white" placeholder="••••••••">
+            </div>
+            <button type="submit" class="w-full py-3 gold-bg text-black font-bold rounded-xl shadow-lg hover:opacity-90 transition-all mt-2">Login to Dashboard</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="space-y-4 hidden">
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Full Name</label>
+                <input type="text" id="regName" required class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl focus:outline-none focus:border-[#b8860b] text-sm text-white" placeholder="Vinayak Tiwari">
+            </div>
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Email</label>
+                <input type="email" id="regEmail" required class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl focus:outline-none focus:border-[#b8860b] text-sm text-white" placeholder="Enter email">
+            </div>
+            <div>
+                <label class="block text-xs uppercase tracking-wider text-gray-400 mb-1">Create Password</label>
+                <input type="password" id="regPassword" required class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl focus:outline-none focus:border-[#b8860b] text-sm text-white" placeholder="••••••••">
+            </div>
+            <button type="submit" class="w-full py-3 gold-bg text-black font-bold rounded-xl shadow-lg hover:opacity-90 transition-all mt-2">Create Account</button>
+        </form>
+    </div>
+
+    <!-- Firebase SDK & Authentication Logic Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Apna Firebase configuration yahan paste karein
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZ17P0MqzjALa9dbKSxEhZjZQuRgeZsuM",
+            authDomain: "vinx-media.firebaseapp.com",
+            projectId: "vinx-media",
+            storageBucket: "vinx-media.firebasestorage.app",
+            messagingSenderId: "888666129078",
+            appId: "1:888666129078:web:74b09f32908250114b5c17",
+            measurementId: "G-TX11MLWWT3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Register Logic
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    fullName: name,
+                    email: email,
+                    coinWallet: 0,
+                    crystalWallet: 0,
+                    virtualID: "V-" + Math.floor(100000 + Math.random() * 900000),
+                    createdAt: new Date()
+                });
+
+                alert("Account Created Successfully! Welcome to VinX Media.");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+
+        // Login Logic
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                alert("Login Successful!");
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert("Login Failed: " + error.message);
+            }
+        });
+    </script>
+
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginBtn = document.getElementById('loginTabBtn');
+            const registerBtn = document.getElementById('registerTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginBtn.classList.add('gold-bg', 'text-black');
+                loginBtn.classList.remove('text-gray-400');
+                registerBtn.classList.remove('gold-bg', 'text-black');
+                registerBtn.classList.add('text-gray-400');
+            } else {
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                registerBtn.classList.add('gold-bg', 'text-black');
+                registerBtn.classList.remove('text-gray-400');
+                loginBtn.classList.remove('gold-bg', 'text-black');
+                loginBtn.classList.add('text-gray-400');
+            }
+        }
+    </script>
+</body>
+</html>
