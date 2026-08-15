@@ -10,16 +10,63 @@
         .gold-border { border-color: #b8860b; }
         .gold-bg { background-color: #b8860b; }
         .gold-text { color: #b8860b; }
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: #0b0f19; }
-        ::-webkit-scrollbar-thumb { background: #b8860b; border-radius: 4px; }
     </style>
 </head>
+<style>
+    @keyframes rotate3D {
+        0% { transform: perspective(800px) rotateY(0deg) rotateX(0deg); }
+        50% { transform: perspective(800px) rotateY(15deg) rotateX(10deg); }
+        100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg); }
+    }
+    @keyframes floatEffect {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
+    }
+    @keyframes glowPulse {
+        0%, 100% { filter: drop-shadow(0 0 12px rgba(184, 134, 11, 0.6)); }
+        50% { filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8)); }
+    }
+    .cinematic-logo {
+        background: linear-gradient(135deg, #b8860b, #ff4500, #9932cc, #00ffff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: rotate3D 6s ease-in-out infinite, floatEffect 4s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+    }
+    @keyframes tickerMove {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    .ticker-wrap { overflow: hidden; white-space: nowrap; }
+    .ticker-content { display: inline-block; animation: tickerMove 20s linear infinite; }
+    .ticker-content:hover { animation-play-state: paused; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #0b0f19; }
+    ::-webkit-scrollbar-thumb { background: #b8860b; border-radius: 4px; }
+    .auth-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: #0b0f19; }
+</style>
 <body class="flex items-center justify-center min-h-screen p-2 md:p-6">
-        <!-- SIMULATED MOBILE FRAME LAYOUT (iOS/Android APK Feel) -->
-    <div class="w-full max-w-md bg-[#131b2e] rounded-3xl shadow-2xl border gold-border overflow-hidden flex flex-col relative">
+        <div id="authOverlay" class="auth-overlay p-4">
+        <div class="w-full max-w-sm p-8 bg-[#131b2e] border gold-border rounded-3xl shadow-2xl text-center space-y-4">
+            <h1 class="text-2xl font-black cinematic-logo uppercase tracking-wider">VinX Media</h1>
+            <p id="authSubtitle" class="text-xs text-gray-400">Welcome back! Please login to your account.</p>
 
-        <!-- ================= VINX OS v3.0 STATUS BAR ================= -->
+            <div id="loginFormContainer" class="space-y-3">
+                <input type="text" id="loginUsername" placeholder="Username or Virtual ID" class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#b8860b]">
+                <input type="password" id="loginPassword" placeholder="Password" class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#b8860b]">
+                <button onclick="handleLogin()" class="w-full py-3 gold-bg text-black font-bold text-xs rounded-xl shadow-lg hover:opacity-90 transition-all uppercase tracking-wider">Login to OS</button>
+                <p class="text-[10px] text-gray-400 pt-2">Don't have an account? <span onclick="switchAuthMode('signup')" class="gold-text font-bold cursor-pointer underline">Sign Up</span></p>
+            </div>
+
+            <div id="signupFormContainer" class="space-y-3 hidden">
+                <input type="text" id="signupFullName" placeholder="Full Name" class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="email" id="signupEmail" placeholder="Email Address" class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                <input type="password" id="signupPassword" placeholder="Create Password" class="w-full px-4 py-3 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-500">
+                <button onclick="handleSignup()" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-lg transition-all uppercase tracking-wider">Create Account</button>
+                <p class="text-[10px] text-gray-400 pt-2">Already have an account? <span onclick="switchAuthMode('login')" class="gold-text font-bold cursor-pointer underline">Login</span></p>
+            </div>
+        </div>
+        </div>
+            <div class="w-full max-w-md bg-[#131b2e] rounded-3xl shadow-2xl border gold-border overflow-hidden flex flex-col relative">
         <div class="bg-[#0b0f19]/90 px-4 py-2 flex justify-between items-center text-[10px] text-gray-400 border-b border-gray-800">
             <span class="font-bold gold-text">VINX OS v3.0</span>
             <div class="flex items-center space-x-2">
@@ -28,52 +75,17 @@
                 <span>🔋 100%</span>
             </div>
         </div>
-
-        <!-- Scrollable App Body Container -->
         <div class="flex-1 overflow-y-auto p-4 space-y-6 max-h-[85vh]">
-                        <!-- ================= CINEMATIC 3D LOGO & APP HEADER ================= -->
-            <style>
-                @keyframes rotate3D {
-                    0% { transform: perspective(800px) rotateY(0deg) rotateX(0deg); }
-                    50% { transform: perspective(800px) rotateY(15deg) rotateX(10deg); }
-                    100% { transform: perspective(800px) rotateY(0deg) rotateX(0deg); }
-                }
-                @keyframes floatEffect {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-6px); }
-                }
-                @keyframes glowPulse {
-                    0%, 100% { filter: drop-shadow(0 0 12px rgba(184, 134, 11, 0.6)); }
-                    50% { filter: drop-shadow(0 0 25px rgba(0, 255, 255, 0.8)); }
-                }
-                .cinematic-logo {
-                    background: linear-gradient(135deg, #b8860b, #ff4500, #9932cc, #00ffff);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    animation: rotate3D 6s ease-in-out infinite, floatEffect 4s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
-                }
-            </style>
             <div class="text-center py-3">
                 <h1 class="text-3xl font-black tracking-wider cinematic-logo uppercase">VinX Media</h1>
                 <p class="text-xs text-gray-400 mt-1">Live-Streaming & Task Monetization Suite</p>
             </div>
 
-            <!-- Global Search Engine Bar -->
             <div class="relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">🔍</span>
                 <input type="text" id="globalSearchInput" onkeyup="globalSearchEngine()" placeholder="Search permissions, modules, or tools..." class="w-full pl-9 pr-4 py-2.5 bg-[#0b0f19] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-[#b8860b]">
             </div>
-                        <!-- ================= LIVE NOTIFICATION DISPLAY TICKER ================= -->
-            <style>
-                @keyframes tickerMove {
-                    0% { transform: translateX(100%); }
-                    100% { transform: translateX(-100%); }
-                }
-                .ticker-wrap { overflow: hidden; white-space: nowrap; }
-                .ticker-content { display: inline-block; animation: tickerMove 20s linear infinite; }
-                .ticker-content:hover { animation-play-state: paused; }
-            </style>
-            <div class="bg-[#0b0f19] rounded-xl border border-gray-800 p-2 overflow-hidden flex items-center shadow-inner">
+                        <div class="bg-[#0b0f19] rounded-xl border border-gray-800 p-2 overflow-hidden flex items-center shadow-inner">
                 <span class="bg-[#b8860b] text-black text-[9px] font-extrabold px-2 py-0.5 rounded mr-2 flex-shrink-0 uppercase">Broadcast</span>
                 <div class="ticker-wrap w-full">
                     <div id="liveTickerText" class="ticker-content text-xs text-gray-300 font-medium">
@@ -81,29 +93,73 @@
                     </div>
                 </div>
             </div>
-                        <!-- ================= USER AUTHENTICATION & VIRTUAL ID SYSTEM ================= -->
+
             <div id="profileModule" class="bg-[#0b0f19] p-4 rounded-2xl border gold-border shadow-xl space-y-3 searchable-card">
                 <div class="flex justify-between items-center">
                     <div>
                         <span class="text-[10px] text-gray-400 uppercase tracking-wider">Virtual ID System</span>
                         <h4 id="virtualIdDisplay" class="text-sm font-black gold-text mt-0.5">VINX-8842T</h4>
                     </div>
-                    <!-- One-Click Clipboard Copy -->
-                    <button onclick="copyVirtualID()" class="px-3 py-1.5 bg-[#b8860b]/20 hover:bg-[#b8860b]/30 gold-text font-bold text-[10px] rounded-xl border gold-border transition-all">
-                        📋 Copy ID
-                    </button>
+                    <button onclick="copyVirtualID()" class="px-3 py-1.5 bg-[#b8860b]/20 hover:bg-[#b8860b]/30 gold-text font-bold text-[10px] rounded-xl border gold-border transition-all">📋 Copy ID</button>
                 </div>
-                
                 <div class="border-t border-gray-800 pt-3 flex justify-between items-center">
                     <span class="text-xs text-gray-400">Session Status: <strong class="text-green-400">Active</strong></span>
-                    <!-- App Logout System -->
-                    <button onclick="confirmLogout()" class="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 font-bold text-[10px] rounded-xl border border-red-900/50 transition-all">
-                        Logout
-                    </button>
+                    <button onclick="confirmLogout()" class="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 font-bold text-[10px] rounded-xl border border-red-900/50 transition-all">Logout</button>
                 </div>
             </div>
-                        <!-- ================= 5. SUB-ADMIN & CONTROL CENTER ================= -->
-            <div id="subAdminModule" class="bg-[#0b0f19] p-4 rounded-2xl border border-purple-500/40 shadow-xl space-y-4 searchable-card">
+                        <div id="taskCentreModule" class="bg-[#0b0f19] p-4 rounded-2xl border border-cyan-500/40 shadow-xl space-y-4 searchable-card">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="text-xs uppercase font-bold text-cyan-400 tracking-wider">🎬 Video Task Centre</h4>
+                        <p class="text-[10px] text-gray-400">Watch videos & complete tasks to earn rewards</p>
+                    </div>
+                    <span class="text-[9px] bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-500/30 font-bold">Earn Rewards</span>
+                </div>
+
+                <div class="bg-[#131b2e] p-3 rounded-xl border border-gray-800 space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-gray-300 font-medium">Daily Task Progress</span>
+                        <span class="text-cyan-400 font-bold">2 / 5 Completed</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-2">
+                        <div class="bg-cyan-400 h-2 rounded-full" style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="bg-[#131b2e] p-3 rounded-xl border border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400 text-sm font-bold">▶️</div>
+                            <div>
+                                <h6 class="text-xs font-bold text-white">Watch Sponsor Stream</h6>
+                                <p class="text-[10px] text-gray-400">Watch for 30 seconds • +100 Crystals</p>
+                            </div>
+                        </div>
+                        <button onclick="startVideoTask('Sponsor Stream', 100)" class="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-[10px] rounded-xl transition-all shadow-md">Watch Now</button>
+                    </div>
+                    <div class="bg-[#131b2e] p-3 rounded-xl border border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-[#b8860b]/20 rounded-xl flex items-center justify-center gold-text text-sm font-bold">🎙️</div>
+                            <div>
+                                <h6 class="text-xs font-bold text-white">Join Voice Audio Room</h6>
+                                <p class="text-[10px] text-gray-400">Stay active for 5 mins • +250 Crystals</p>
+                            </div>
+                        </div>
+                        <button onclick="startVoiceRoomTask()" class="px-3 py-1.5 gold-bg hover:opacity-90 text-black font-bold text-[10px] rounded-xl transition-all shadow-md">Join Room</button>
+                    </div>
+                    <div class="bg-[#131b2e] p-3 rounded-xl border border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400 text-sm font-bold">📅</div>
+                            <div>
+                                <h6 class="text-xs font-bold text-white">Daily App Check-In</h6>
+                                <p class="text-[10px] text-gray-400">Claim daily login bonus • +50 Crystals</p>
+                            </div>
+                        </div>
+                        <button onclick="claimDailyReward()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] rounded-xl transition-all shadow-md">Claim</button>
+                    </div>
+                </div>
+                        </div>
+                                    <div id="subAdminModule" class="bg-[#0b0f19] p-4 rounded-2xl border border-purple-500/40 shadow-xl space-y-4 searchable-card">
                 <div class="flex justify-between items-center">
                     <div>
                         <h4 class="text-xs uppercase font-bold text-purple-400 tracking-wider">Sub-Admin & Control Center</h4>
@@ -112,11 +168,9 @@
                     <span class="text-[9px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full border border-purple-500/30 font-bold">Admin Panel</span>
                 </div>
 
-                <!-- Live Sub-Admin Filtering Bar -->
                 <input type="text" id="subAdminFilterInput" onkeyup="filterSubAdminModules()" placeholder="Filter administrative modules..." class="w-full px-3 py-2 bg-[#131b2e] border border-gray-700 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500">
-                                <!-- Permission Toggle List -->
+                
                 <div id="permissionListContainer" class="space-y-3">
-                    <!-- Toggle Item 1 -->
                     <div class="permission-item flex justify-between items-center border-b border-gray-800 pb-2.5" data-keyword="topup gateway coin">
                         <div>
                             <h6 class="text-xs font-bold text-white">Coin Top-up Gateway</h6>
@@ -127,8 +181,6 @@
                             <div class="w-9 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#b8860b]"></div>
                         </label>
                     </div>
-
-                    <!-- Toggle Item 2 -->
                     <div class="permission-item flex justify-between items-center border-b border-gray-800 pb-2.5" data-keyword="task feed engagement">
                         <div>
                             <h6 class="text-xs font-bold text-white">Task Engagement Feed</h6>
@@ -139,8 +191,6 @@
                             <div class="w-9 h-5 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
                         </label>
                     </div>
-
-                    <!-- Toggle Item 3 -->
                     <div class="permission-item flex justify-between items-center" data-keyword="live streaming voice chat">
                         <div>
                             <h6 class="text-xs font-bold text-white">Live Voice Streaming Rooms</h6>
@@ -152,9 +202,8 @@
                         </label>
                     </div>
                 </div>
-            </div>
-                        <!-- ================= 6. FOUNDER MASTER CONTROL PANEL ================= -->
-            <div id="founderModule" class="bg-[#0b0f19] p-4 rounded-2xl border gold-border shadow-2xl space-y-4 searchable-card">
+                                    </div>
+                                                <div id="founderModule" class="bg-[#0b0f19] p-4 rounded-2xl border gold-border shadow-2xl space-y-4 searchable-card">
                 <div class="flex justify-between items-center">
                     <div>
                         <h4 class="text-xs uppercase font-bold gold-text tracking-wider">Founder Master Control</h4>
@@ -163,7 +212,6 @@
                     <span class="text-[9px] gold-bg text-black px-2 py-0.5 rounded font-black">MASTER</span>
                 </div>
 
-                <!-- Broadcast Notification Sender Input Interface -->
                 <div class="space-y-2 bg-[#131b2e] p-3 rounded-xl border border-gray-800">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-300">Push Custom Ticker Broadcast</label>
                     <div class="flex space-x-2">
@@ -172,29 +220,54 @@
                     </div>
                 </div>
 
-                <!-- Platform Withdrawal Approval Master Action -->
                 <div class="space-y-2 bg-[#131b2e] p-3 rounded-xl border border-gray-800">
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-gray-300">Pending Host Payouts: <strong class="text-cyan-400">₹48,200</strong></span>
                         <span class="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded font-bold">Queue: 12</span>
                     </div>
-                    <button onclick="approveAllPayouts()" class="w-full py-2.5 gold-bg text-black font-bold text-xs rounded-xl shadow-lg hover:opacity-90 transition-all">
-                        Approve All Payouts & Withdrawals
-                    </button>
+                    <button onclick="approveAllPayouts()" class="w-full py-2.5 gold-bg text-black font-bold text-xs rounded-xl shadow-lg hover:opacity-90 transition-all">Approve All Payouts & Withdrawals</button>
                 </div>
             </div>
-
         </div>
-                <!-- Simulated Mobile Bottom Navigation Bar -->
+
         <div class="bg-[#0b0f19] border-t border-gray-800 py-3 px-6 flex justify-around items-center text-xs text-gray-400">
             <button onclick="scrollToModule('profileModule')" class="hover:gold-text flex flex-col items-center"><span>🏠</span><span class="text-[9px] mt-0.5">Home</span></button>
+            <button onclick="scrollToModule('taskCentreModule')" class="hover:gold-text flex flex-col items-center"><span>🎬</span><span class="text-[9px] mt-0.5">Tasks</span></button>
             <button onclick="scrollToModule('subAdminModule')" class="hover:gold-text flex flex-col items-center"><span>🛡️</span><span class="text-[9px] mt-0.5">Admin</span></button>
             <button onclick="scrollToModule('founderModule')" class="hover:gold-text flex flex-col items-center"><span>👑</span><span class="text-[9px] mt-0.5">Founder</span></button>
         </div>
-    </div>
-        <!-- JavaScript Execution Logic -->
-    <script>
-        // Update OS Clock
+            </div>
+                <script>
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('loginFormContainer');
+            const signupForm = document.getElementById('signupFormContainer');
+            const subtitle = document.getElementById('authSubtitle');
+            if(mode === 'signup') {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                subtitle.innerText = "Create your new VinX Media account.";
+            } else {
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                subtitle.innerText = "Welcome back! Please login to your account.";
+            }
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            if(username === "") { alert("Please enter your username or virtual ID!"); return; }
+            document.getElementById('authOverlay').style.display = 'none';
+            alert(`Welcome back, ${username}! Secure session initialized.`);
+        }
+
+        function handleSignup() {
+            const fullName = document.getElementById('signupFullName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            if(fullName === "" || email === "") { alert("Please fill in all required registration fields!"); return; }
+            document.getElementById('authOverlay').style.display = 'none';
+            alert(`Account created successfully! Welcome to VINX OS, ${fullName}.`);
+        }
+
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -207,82 +280,64 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
-
-        // 1. One-Click Clipboard Copy for Virtual ID
+                </script>
+                    <script>
         function copyVirtualID() {
             const virtualId = document.getElementById('virtualIdDisplay').innerText;
-            navigator.clipboard.writeText(virtualId).then(() => {
-                alert(`Virtual ID copied successfully: ${virtualId}`);
-            });
+            navigator.clipboard.writeText(virtualId).then(() => { alert(`Virtual ID copied successfully: ${virtualId}`); });
         }
 
-        // App Logout Prompt System
         function confirmLogout() {
             if (confirm("Are you sure you want to terminate your secure session?")) {
-                alert("Session terminated securely. Redirecting to login portal...");
+                document.getElementById('authOverlay').style.display = 'flex';
             }
         }
 
-        // Live Sub-Admin Module Filtering
+        function startVideoTask(taskName, rewardAmount) {
+            alert(`Opening video player for "${taskName}"...\n\nPlease watch the video completely to claim your +${rewardAmount} crystals!`);
+            setTimeout(() => { alert(`🎉 Success! You watched the video and earned +${rewardAmount} crystals.`); }, 2000);
+        }
+
+        function startVoiceRoomTask() { alert("Redirecting to active Live Voice Streaming Rooms... Stay active for 5 minutes to complete the task."); }
+        function claimDailyReward() { alert("🎁 Daily Check-in Successful! +50 Crystals added to your wallet balance."); }
+
         function filterSubAdminModules() {
             const query = document.getElementById('subAdminFilterInput').value.toLowerCase();
             const items = document.querySelectorAll('.permission-item');
             items.forEach(item => {
                 const keyword = item.getAttribute('data-keyword');
-                if (keyword.includes(query) || item.innerText.toLowerCase().includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
+                if (keyword.includes(query) || item.innerText.toLowerCase().includes(query)) { item.style.display = 'flex'; } else { item.style.display = 'none'; }
             });
         }
 
-        // Global Search Engine for Rapid Navigation
         function globalSearchEngine() {
             const query = document.getElementById('globalSearchInput').value.toLowerCase();
             const cards = document.querySelectorAll('.searchable-card');
             cards.forEach(card => {
                 if (card.innerText.toLowerCase().includes(query)) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'scale(1)';
+                    card.style.opacity = '1'; card.style.transform = 'scale(1)';
                 } else {
-                    if (query.length > 0) {
-                        card.style.opacity = '0.3';
-                    } else {
-                        card.style.opacity = '1';
-                    }
+                    card.style.opacity = query.length > 0 ? '0.3' : '1';
                 }
             });
         }
 
-        // Founder Broadcast Notification Sender
         function sendBroadcastAlert() {
             const message = document.getElementById('customBroadcastInput').value.trim();
-            if (message === "") {
-                alert("Please enter a broadcast message.");
-                return;
-            }
+            if (message === "") { alert("Please enter a broadcast message."); return; }
             document.getElementById('liveTickerText').innerText = `🚨 ANNOUNCEMENT: ${message} | 🪙 Stay active on VinX Media OS v3.0!`;
             document.getElementById('customBroadcastInput').value = "";
             alert("Custom broadcast successfully pushed to live ticker!");
         }
 
-        // Platform Withdrawal Approval Master Action
         function approveAllPayouts() {
             if (confirm("Execute master action to approve all pending host and user payouts?")) {
                 alert("Success! All pending platform withdrawals have been approved and processed.");
             }
         }
 
-        // Permission Toggle Action
-        function togglePermission(featureName, status) {
-            console.log(`Permission updated: ${featureName} -> ${status ? 'ENABLED' : 'DISABLED'}`);
-        }
-
-        // Bottom Nav Scroll Helper
-        function scrollToModule(moduleId) {
-            document.getElementById(moduleId).scrollIntoView({ behavior: 'smooth' });
-        }
+        function togglePermission(featureName, status) { console.log(`Permission updated: ${featureName} -> ${status ? 'ENABLED' : 'DISABLED'}`); }
+        function scrollToModule(moduleId) { document.getElementById(moduleId).scrollIntoView({ behavior: 'smooth' }); }
     </script>
 </body>
 </html>
